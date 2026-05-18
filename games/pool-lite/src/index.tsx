@@ -206,7 +206,11 @@ function Game() {
             pointerEvents="none"
             style={[
               styles.aimDot,
-              { left: cue.x + aim.dx - 4, top: cue.y + aim.dy - 4, opacity: Math.hypot(aim.dx, aim.dy) / MAX_PULL },
+              {
+                left: cue.x + aim.dx - 4,
+                top: cue.y + aim.dy - 4,
+                opacity: Math.hypot(aim.dx, aim.dy) / MAX_PULL,
+              },
             ]}
           />
         ) : null}

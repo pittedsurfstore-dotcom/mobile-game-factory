@@ -80,7 +80,12 @@ function Game() {
       <View style={{ height: 12 }} />
       <View style={styles.upgrades}>
         <Text style={styles.h2}>Upgrades</Text>
-        <UpgradeRow label={`Faster hands (+1/tap)`} cost={perTap * 10} canBuy={coins >= perTap * 10} onBuy={buyTap} />
+        <UpgradeRow
+          label={`Faster hands (+1/tap)`}
+          cost={perTap * 10}
+          canBuy={coins >= perTap * 10}
+          onBuy={buyTap}
+        />
         {upgrades.map((u, i) => (
           <UpgradeRow
             key={u.name}

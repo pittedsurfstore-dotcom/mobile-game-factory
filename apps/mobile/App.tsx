@@ -54,7 +54,9 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#0b0d10' }, headerTintColor: '#f5f5f5' }}>
+        <Stack.Navigator
+          screenOptions={{ headerStyle: { backgroundColor: '#0b0d10' }, headerTintColor: '#f5f5f5' }}
+        >
           <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Game Factory' }} />
           <Stack.Screen
             name="Game"

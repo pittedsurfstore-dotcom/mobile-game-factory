@@ -1,13 +1,4 @@
-import {
-  COLS,
-  ROWS,
-  type Board,
-  clearLines,
-  collides,
-  makeBoard,
-  merge,
-  rotate,
-} from './logic';
+import { COLS, ROWS, type Board, clearLines, collides, makeBoard, merge, rotate } from './logic';
 
 function row(...cells: number[]): number[] {
   return cells;

@@ -136,7 +136,9 @@ function Game() {
           <Button
             label="Play"
             variant="ghost"
-            onPress={() => act('play', (s) => ({ ...s, fun: clamp(s.fun + 25), energy: clamp(s.energy - 10) }))}
+            onPress={() =>
+              act('play', (s) => ({ ...s, fun: clamp(s.fun + 25), energy: clamp(s.energy - 10) }))
+            }
           />
         </View>
         <View style={styles.btn}>

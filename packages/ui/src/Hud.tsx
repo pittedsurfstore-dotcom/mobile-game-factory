@@ -5,9 +5,13 @@ import { theme } from './theme';
 export function Hud({ left, right }: { left: React.ReactNode; right?: React.ReactNode }) {
   return (
     <View style={styles.row}>
-      <View style={styles.cell}>{typeof left === 'string' ? <Text style={styles.txt}>{left}</Text> : left}</View>
+      <View style={styles.cell}>
+        {typeof left === 'string' ? <Text style={styles.txt}>{left}</Text> : left}
+      </View>
       {right ? (
-        <View style={styles.cell}>{typeof right === 'string' ? <Text style={styles.txt}>{right}</Text> : right}</View>
+        <View style={styles.cell}>
+          {typeof right === 'string' ? <Text style={styles.txt}>{right}</Text> : right}
+        </View>
       ) : null}
     </View>
   );

@@ -84,7 +84,9 @@ function Game() {
                 isHere && styles.here,
               ]}
             >
-              <Text style={styles.cellTxt}>{isHere ? '🧍' : isEnd ? '🏁' : sc != null ? (sc > i ? '↑' : '↓') : i}</Text>
+              <Text style={styles.cellTxt}>
+                {isHere ? '🧍' : isEnd ? '🏁' : sc != null ? (sc > i ? '↑' : '↓') : i}
+              </Text>
             </View>
           );
         })}
@@ -92,7 +94,11 @@ function Game() {
       <View style={styles.dieRow}>
         <Text style={styles.die}>{die ?? '–'}</Text>
         <View style={{ flex: 1 }}>
-          <Button label={rolling ? 'Rolling…' : won ? 'You won!' : 'Roll'} onPress={roll} disabled={rolling || won} />
+          <Button
+            label={rolling ? 'Rolling…' : won ? 'You won!' : 'Roll'}
+            onPress={roll}
+            disabled={rolling || won}
+          />
         </View>
       </View>
       {won ? (
