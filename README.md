@@ -134,7 +134,9 @@ if (iap().isEntitled('no_ads')) {
 
 The `block-puzzle` continue flow already uses this: if the player owns the `no_ads` entitlement, the game-over button switches from _"Watch ad to clear bottom 3 rows"_ to _"Continue (clear bottom 3 rows)"_ and grants the reward without an ad. The entitlement identifier `no_ads` must match what you configure in the RevenueCat dashboard.
 
-A "buy no-ads" purchase UI is not wired yet — call `iap().purchase('your.product.id')` from wherever you want to surface it.
+A Settings screen is wired in the app (gear icon in the home header). It calls `iap().getProducts()` to render the real price next to _"Remove ads"_, calls `iap().purchase(NOADS_PRODUCT_ID)` on tap, and has a _"Restore purchases"_ button beneath it. The product identifier defaults to `com.mgf.no_ads`; override with `EXPO_PUBLIC_NOADS_PRODUCT_ID` if your dashboard uses a different ID. When RevenueCat is not configured (or no offering matches), the Settings screen shows _"In-app purchases are not configured in this build."_ and disables the buy button.
+
+The well-known entitlement constant `NOADS_ENTITLEMENT = 'no_ads'` is exported from `@mgf/monetization` so games and the settings screen share one source of truth — set up an entitlement with that identifier in the RevenueCat dashboard.
 
 ## Known limitations of the MVPs
 

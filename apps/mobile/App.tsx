@@ -9,6 +9,7 @@ import { analytics, setAnalytics } from '@mgf/analytics';
 import { setAds, setIAP } from '@mgf/monetization';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameHostScreen } from './src/screens/GameHostScreen';
+import { SettingsScreen } from './src/screens/SettingsScreen';
 import { games } from './src/games';
 import { createPostHogAnalytics } from './src/analytics-posthog';
 import { createAdMobAds } from './src/ads-admob';
@@ -53,6 +54,7 @@ setStore({
 export type RootStackParamList = {
   Home: undefined;
   Game: { id: keyof typeof games };
+  Settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -73,6 +75,7 @@ export default function App() {
             component={GameHostScreen}
             options={({ route }) => ({ title: games[route.params.id].meta.title })}
           />
+          <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="light" />

@@ -1,14 +1,17 @@
-import type { IAP } from '@mgf/monetization';
+import type { IAP, Product } from '@mgf/monetization';
 
 type CustomerInfo = { entitlements: { active: Record<string, unknown> } };
+
+type RnProduct = { identifier: string; priceString: string; title?: string };
+type RnPackage = { product: RnProduct };
 
 type RnPurchases = {
   configure(options: { apiKey: string }): void;
   getCustomerInfo(): Promise<CustomerInfo>;
   getOfferings(): Promise<{
-    all: Record<string, { availablePackages: { product: { identifier: string } }[] }>;
+    all: Record<string, { availablePackages: RnPackage[] }>;
   }>;
-  purchasePackage(pkg: { product: { identifier: string } }): Promise<{ customerInfo: CustomerInfo }>;
+  purchasePackage(pkg: RnPackage): Promise<{ customerInfo: CustomerInfo }>;
   restorePurchases(): Promise<CustomerInfo>;
   addCustomerInfoUpdateListener(listener: (info: CustomerInfo) => void): void;
 };
@@ -46,6 +49,21 @@ export function createRevenueCatIAP(apiKey: string, productIds: readonly string[
   return {
     productIds() {
       return productIds;
+    },
+    async getProducts(): Promise<Product[]> {
+      try {
+        const offerings = await Purchases.getOfferings();
+        return Object.values(offerings.all)
+          .flatMap((o) => o.availablePackages)
+          .map((p) => ({
+            id: p.product.identifier,
+            priceString: p.product.priceString,
+            title: p.product.title,
+          }));
+      } catch (err) {
+        if (__DEV__) console.warn('[iap] getProducts failed', err);
+        return [];
+      }
     },
     async purchase(productId: string) {
       try {

@@ -4,8 +4,18 @@ export interface Ads {
   show(slot: AdSlot): Promise<{ shown: boolean; rewarded?: boolean }>;
 }
 
+export type Product = {
+  id: string;
+  priceString: string;
+  title?: string;
+};
+
+/** Well-known entitlement identifier for the "remove ads" purchase. */
+export const NOADS_ENTITLEMENT = 'no_ads';
+
 export interface IAP {
   productIds(): readonly string[];
+  getProducts(): Promise<Product[]>;
   purchase(productId: string): Promise<{ purchased: boolean }>;
   restore(): Promise<void>;
   isEntitled(entitlement: string): boolean;
@@ -21,6 +31,10 @@ class NoopAds implements Ads {
 class NoopIAP implements IAP {
   productIds() {
     return [] as const;
+  }
+  async getProducts() {
+    if (__DEV__) console.log('[iap] getProducts');
+    return [];
   }
   async purchase(productId: string) {
     if (__DEV__) console.log('[iap] purchase', productId);

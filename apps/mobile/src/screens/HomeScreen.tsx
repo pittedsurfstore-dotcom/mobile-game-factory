@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screen, theme } from '@mgf/ui';
@@ -11,6 +11,16 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 const entries = (Object.keys(games) as GameKey[]).map((id) => ({ ...games[id].meta, id }));
 
 export function HomeScreen({ navigation }: Props) {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable hitSlop={12} onPress={() => navigation.navigate('Settings')}>
+          <Text style={styles.gear}>⚙</Text>
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
+
   return (
     <Screen>
       <Text style={styles.h1}>Pick a game</Text>
@@ -54,4 +64,5 @@ const styles = StyleSheet.create({
   emoji: { fontSize: 30 },
   title: { color: theme.text, fontSize: 16, fontWeight: '700' },
   blurb: { color: theme.mute, fontSize: 12 },
+  gear: { color: theme.text, fontSize: 22 },
 });

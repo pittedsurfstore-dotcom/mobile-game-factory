@@ -3,9 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
 import { useGameLoop, useHighScore, mulberry32, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
-import { ads, iap } from '@mgf/monetization';
-
-const NOADS_ENTITLEMENT = 'no_ads';
+import { NOADS_ENTITLEMENT, ads, iap } from '@mgf/monetization';
 import {
   COLS,
   COLORS,
