@@ -92,7 +92,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Test
-        run: pnpm test --ci
+        run: pnpm test -- --ci
 
   expo-doctor:
     name: Expo Doctor
