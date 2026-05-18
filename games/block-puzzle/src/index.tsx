@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Button, Hud, theme } from '@mgf/ui';
+import { StyleSheet, View } from 'react-native';
+import { Button, Hud } from '@mgf/ui';
 import { useGameLoop, useHighScore, mulberry32, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
 import { NOADS_ENTITLEMENT, ads, iap } from '@mgf/monetization';
@@ -16,8 +16,9 @@ import {
   merge,
   rotate,
 } from './logic';
+import { CONTINUE_CLEAR_ROWS, GameOverOverlay } from './GameOverOverlay';
 
-const CONTINUE_CLEAR_ROWS = 3;
+export { GameOverOverlay, continueButtonLabel } from './GameOverOverlay';
 
 const meta = {
   id: 'block-puzzle' as const,
@@ -86,12 +87,6 @@ function Game() {
       setWaitingForAd(false);
     }
   }, [grantContinue, score, usedContinue, waitingForAd]);
-
-  const continueButtonLabel = waitingForAd
-    ? 'Loading ad…'
-    : iap().isEntitled(NOADS_ENTITLEMENT)
-      ? `Continue (clear bottom ${CONTINUE_CLEAR_ROWS} rows)`
-      : `Watch ad to clear bottom ${CONTINUE_CLEAR_ROWS} rows`;
 
   const lockAndSpawn = useCallback(
     (b: Board, p: typeof piece) => {
@@ -177,14 +172,14 @@ function Game() {
         <Button label="▶" variant="ghost" onPress={() => move(1)} />
       </View>
       {over && (
-        <View style={styles.overlay}>
-          <Text style={styles.overText}>Game Over</Text>
-          <Text style={styles.overSub}>Score {score}</Text>
-          {!usedContinue && (
-            <Button label={continueButtonLabel} onPress={continueWithAd} disabled={waitingForAd} />
-          )}
-          <Button label="Play again" variant={usedContinue ? 'primary' : 'ghost'} onPress={reset} />
-        </View>
+        <GameOverOverlay
+          score={score}
+          usedContinue={usedContinue}
+          waitingForAd={waitingForAd}
+          entitled={iap().isEntitled(NOADS_ENTITLEMENT)}
+          onContinue={continueWithAd}
+          onReset={reset}
+        />
       )}
     </View>
   );
@@ -195,20 +190,6 @@ const styles = StyleSheet.create({
   row: { flex: 1, flexDirection: 'row', gap: 1 },
   cell: { flex: 1, borderRadius: 2 },
   controls: { flexDirection: 'row', gap: 8, justifyContent: 'space-around' },
-  overlay: {
-    position: 'absolute',
-    inset: 0 as unknown as number,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.75)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 14,
-  },
-  overText: { color: theme.text, fontSize: 30, fontWeight: '800' },
-  overSub: { color: theme.mute, fontSize: 16 },
 });
 
 const mod: GameModule = { meta, Screen: Game };
