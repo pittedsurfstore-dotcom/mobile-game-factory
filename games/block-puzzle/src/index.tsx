@@ -3,7 +3,21 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
 import { useGameLoop, useHighScore, mulberry32, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
-import { COLS, COLORS, SHAPES, type Board, clearLines, collides, makeBoard, merge, rotate } from './logic';
+import { ads } from '@mgf/monetization';
+import {
+  COLS,
+  COLORS,
+  SHAPES,
+  type Board,
+  clearBottomRows,
+  clearLines,
+  collides,
+  makeBoard,
+  merge,
+  rotate,
+} from './logic';
+
+const CONTINUE_CLEAR_ROWS = 3;
 
 const meta = {
   id: 'block-puzzle' as const,
@@ -24,6 +38,8 @@ function Game() {
   const [score, setScore] = useState(0);
   const [running, setRunning] = useState(true);
   const [over, setOver] = useState(false);
+  const [usedContinue, setUsedContinue] = useState(false);
+  const [waitingForAd, setWaitingForAd] = useState(false);
   const dropAccRef = useRef(0);
   const dropIntervalRef = useRef(0.6);
   const { high, submit } = useHighScore(meta.id);
@@ -34,10 +50,33 @@ function Game() {
     setScore(0);
     setOver(false);
     setRunning(true);
+    setUsedContinue(false);
     dropAccRef.current = 0;
     dropIntervalRef.current = 0.6;
     analytics().track('game_restart', { id: meta.id });
   }, [newPiece]);
+
+  const continueWithAd = useCallback(async () => {
+    if (usedContinue || waitingForAd) return;
+    setWaitingForAd(true);
+    analytics().track('ad_continue_requested', { id: meta.id, score });
+    try {
+      const result = await ads().show('rewarded');
+      if (!result.rewarded) {
+        analytics().track('ad_continue_skipped', { id: meta.id });
+        return;
+      }
+      analytics().track('ad_continue_granted', { id: meta.id, score });
+      setBoard((b) => clearBottomRows(b, CONTINUE_CLEAR_ROWS));
+      setPiece(newPiece());
+      setOver(false);
+      setRunning(true);
+      setUsedContinue(true);
+      dropAccRef.current = 0;
+    } finally {
+      setWaitingForAd(false);
+    }
+  }, [newPiece, score, usedContinue, waitingForAd]);
 
   const lockAndSpawn = useCallback(
     (b: Board, p: typeof piece) => {
@@ -126,7 +165,14 @@ function Game() {
         <View style={styles.overlay}>
           <Text style={styles.overText}>Game Over</Text>
           <Text style={styles.overSub}>Score {score}</Text>
-          <Button label="Play again" onPress={reset} />
+          {!usedContinue && (
+            <Button
+              label={waitingForAd ? 'Loading ad…' : `Watch ad to clear bottom ${CONTINUE_CLEAR_ROWS} rows`}
+              onPress={continueWithAd}
+              disabled={waitingForAd}
+            />
+          )}
+          <Button label="Play again" variant={usedContinue ? 'primary' : 'ghost'} onPress={reset} />
         </View>
       )}
     </View>

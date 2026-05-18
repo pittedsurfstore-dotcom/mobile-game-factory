@@ -84,3 +84,16 @@ export function clearLines(board: Board): { board: Board; cleared: number } {
   const empties: Board = Array.from({ length: cleared }, () => Array<Cell>(COLS).fill(EMPTY));
   return { board: [...empties, ...kept], cleared };
 }
+
+/**
+ * Removes the bottom `n` rows of the board and replaces them with empty rows
+ * at the top. Used by the "watch ad to continue" flow so the player can keep
+ * playing after a game-over without losing their whole stack.
+ */
+export function clearBottomRows(board: Board, n: number): Board {
+  const drop = Math.max(0, Math.min(ROWS, n));
+  if (drop === 0) return board.map((row) => row.slice());
+  const empties: Board = Array.from({ length: drop }, () => Array<Cell>(COLS).fill(EMPTY));
+  const survivors = board.slice(0, ROWS - drop);
+  return [...empties, ...survivors];
+}

@@ -1,4 +1,14 @@
-import { COLS, ROWS, type Board, clearLines, collides, makeBoard, merge, rotate } from './logic';
+import {
+  COLS,
+  ROWS,
+  type Board,
+  clearBottomRows,
+  clearLines,
+  collides,
+  makeBoard,
+  merge,
+  rotate,
+} from './logic';
 
 function row(...cells: number[]): number[] {
   return cells;
@@ -166,5 +176,64 @@ describe('clearLines', () => {
     const snapshot = b.map((r) => r.slice());
     clearLines(b);
     expect(b).toEqual(snapshot);
+  });
+});
+
+describe('clearBottomRows', () => {
+  it('returns a fresh copy when n is 0', () => {
+    const b = makeBoard();
+    b[ROWS - 1] = fullRow(3);
+    const out = clearBottomRows(b, 0);
+    expect(out).toEqual(b);
+    expect(out).not.toBe(b);
+  });
+
+  it('removes the bottom n rows and prepends empty rows at the top', () => {
+    const b = makeBoard();
+    b[ROWS - 3] = fullRow(1);
+    b[ROWS - 2] = fullRow(2);
+    b[ROWS - 1] = fullRow(3);
+    const out = clearBottomRows(b, 3);
+    expect(out).toHaveLength(ROWS);
+    // bottom 3 rows of the result come from the top of the original board (all empty)
+    for (let i = 0; i < ROWS; i++) {
+      expect(out[i]!.every((c) => c === 0)).toBe(true);
+    }
+  });
+
+  it('preserves the upper-stack survivors unchanged', () => {
+    const b = makeBoard();
+    b[2] = fullRow(9);
+    b[ROWS - 1] = fullRow(3);
+    const out = clearBottomRows(b, 1);
+    // Original row 2 (full row of 9s) should now be at index 3 after shift
+    expect(out[3]).toEqual(fullRow(9));
+    // The first row of the result is empty (newly prepended)
+    expect(out[0]!.every((c) => c === 0)).toBe(true);
+    // The last row of the result is the original second-to-last row (empty)
+    expect(out[ROWS - 1]!.every((c) => c === 0)).toBe(true);
+  });
+
+  it('does not mutate the input', () => {
+    const b = makeBoard();
+    b[ROWS - 1] = fullRow(1);
+    const snapshot = b.map((r) => r.slice());
+    clearBottomRows(b, 2);
+    expect(b).toEqual(snapshot);
+  });
+
+  it('clamps n above ROWS to ROWS (returns an entirely empty board)', () => {
+    const b = makeBoard();
+    b[0] = fullRow(7);
+    b[ROWS - 1] = fullRow(5);
+    const out = clearBottomRows(b, ROWS + 100);
+    for (const r of out) expect(r.every((c) => c === 0)).toBe(true);
+  });
+
+  it('clamps negative n to 0', () => {
+    const b = makeBoard();
+    b[ROWS - 1] = fullRow(4);
+    const out = clearBottomRows(b, -5);
+    expect(out).toEqual(b);
   });
 });
