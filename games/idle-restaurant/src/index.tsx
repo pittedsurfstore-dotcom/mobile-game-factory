@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
 import { useGameLoop, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
+import { INITIAL_UPGRADES, type Upgrade, fmt, totalCps } from './logic';
 
 const meta = {
   id: 'idle-restaurant' as const,
@@ -10,22 +11,6 @@ const meta = {
   blurb: 'Cook, earn, hire. Watch it grow.',
   emoji: '🍳',
 };
-
-type Upgrade = { name: string; cost: number; cps: number; owned: number; growth: number };
-
-const INITIAL_UPGRADES: Upgrade[] = [
-  { name: 'Line cook', cost: 25, cps: 1, owned: 0, growth: 1.15 },
-  { name: 'Sous chef', cost: 250, cps: 8, owned: 0, growth: 1.17 },
-  { name: 'Chef', cost: 2000, cps: 50, owned: 0, growth: 1.2 },
-  { name: 'Franchise', cost: 20000, cps: 350, owned: 0, growth: 1.22 },
-];
-
-function fmt(n: number): string {
-  if (n < 1000) return n.toFixed(0);
-  if (n < 1_000_000) return (n / 1000).toFixed(1) + 'k';
-  if (n < 1_000_000_000) return (n / 1_000_000).toFixed(2) + 'M';
-  return (n / 1_000_000_000).toFixed(2) + 'B';
-}
 
 function Game() {
   const [coins, setCoins] = useState(0);
@@ -53,7 +38,7 @@ function Game() {
         const cost = Math.floor(u.cost * u.growth);
         const next = curr.slice();
         next[i] = { ...u, owned, cost };
-        cpsRef.current = next.reduce((sum, x) => sum + x.cps * x.owned, 0);
+        cpsRef.current = totalCps(next);
         analytics().track('upgrade_buy', { id: meta.id, name: u.name, owned });
         return next;
       });
