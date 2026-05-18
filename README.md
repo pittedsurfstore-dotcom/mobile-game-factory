@@ -36,10 +36,17 @@ pnpm mobile           # starts Expo (then press i / a / w)
 Workspace-wide checks:
 
 ```bash
-pnpm typecheck   # tsc -p apps/mobile/tsconfig.json (covers all packages + games)
-pnpm lint        # eslint 9 flat config
-pnpm test        # jest, all package test suites
+pnpm typecheck     # tsc -p apps/mobile/tsconfig.json (covers all packages + games)
+pnpm lint          # eslint 9 flat config
+pnpm test          # jest, all package test suites
+pnpm format        # prettier --write .
+pnpm format:check  # prettier --check . (used in CI)
 ```
+
+A Husky pre-commit hook runs `lint-staged` (eslint --fix + prettier --write on
+staged files, with `--max-warnings 0` so warnings block commits) followed by a
+full `tsc --noEmit`. Bad commits are reverted automatically. To bypass in an
+emergency, use `git commit --no-verify` — but a CI failure is your next stop.
 
 ## Tests
 
