@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
 import { getStore, useGameLoop, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
+import { KEY, type State, applyOfflineDecay, clamp, initial, moodOf } from './logic';
 
 const meta = {
   id: 'virtual-pet' as const,
@@ -10,51 +11,6 @@ const meta = {
   blurb: 'Feed, play, sleep. Keep them happy.',
   emoji: '🐶',
 };
-
-const KEY = 'pet:state';
-
-type State = {
-  hunger: number;
-  fun: number;
-  energy: number;
-  age: number;
-  lastSeen: number;
-  mood: string;
-};
-
-const initial = (): State => ({
-  hunger: 80,
-  fun: 70,
-  energy: 90,
-  age: 0,
-  lastSeen: Date.now(),
-  mood: '😊',
-});
-
-function clamp(n: number, lo = 0, hi = 100) {
-  return Math.max(lo, Math.min(hi, n));
-}
-
-function applyOfflineDecay(s: State): State {
-  const now = Date.now();
-  const elapsed = Math.min(3600 * 12, (now - s.lastSeen) / 1000);
-  return {
-    ...s,
-    hunger: clamp(s.hunger - elapsed * 0.01),
-    fun: clamp(s.fun - elapsed * 0.008),
-    energy: clamp(s.energy - elapsed * 0.005 + Math.max(0, elapsed - 600) * 0.01),
-    age: s.age + elapsed,
-    lastSeen: now,
-  };
-}
-
-function moodOf(s: State): string {
-  if (s.energy < 15) return '😴';
-  if (s.hunger < 20) return '🥺';
-  if (s.fun < 20) return '😒';
-  if (s.hunger > 70 && s.fun > 60 && s.energy > 50) return '🥰';
-  return '🙂';
-}
 
 function Game() {
   const [state, setState] = useState<State>(initial);
