@@ -5,10 +5,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStore } from '@mgf/game-core';
-import { analytics } from '@mgf/analytics';
+import { analytics, setAnalytics } from '@mgf/analytics';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameHostScreen } from './src/screens/GameHostScreen';
 import { games } from './src/games';
+import { createPostHogAnalytics } from './src/analytics-posthog';
+
+const POSTHOG_KEY = process.env.EXPO_PUBLIC_POSTHOG_KEY;
+const POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST;
+if (POSTHOG_KEY) {
+  setAnalytics(createPostHogAnalytics(POSTHOG_KEY, POSTHOG_HOST));
+}
 
 setStore({
   async get(k) {

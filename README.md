@@ -57,20 +57,31 @@ The mobile app's `src/games.ts` imports all nine and the home screen renders the
 3. Add it to `apps/mobile/package.json` deps and `apps/mobile/src/games.ts`.
 4. `pnpm install` to refresh the workspace links.
 
-## Service interfaces (stubbed)
+## Service interfaces
 
-Real SDKs are not wired yet. To switch in providers, call once at app startup:
+### Analytics (PostHog wired in, opt-in via env)
+
+`apps/mobile/src/analytics-posthog.ts` adapts the `posthog-react-native` SDK to the `@mgf/analytics` interface. `App.tsx` activates it only when `EXPO_PUBLIC_POSTHOG_KEY` is present; otherwise the noop impl stays (events log to console in dev).
+
+To enable, export your PostHog **public project key** before starting Expo (the `EXPO_PUBLIC_` prefix means it ships in the client bundle — that's intentional for analytics keys; never use a secret key here):
+
+```bash
+export EXPO_PUBLIC_POSTHOG_KEY=phc_xxx
+export EXPO_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com   # optional; defaults to US cloud
+corepack pnpm mobile
+```
+
+### Ads + IAP (still stubbed)
+
+Swap in the real SDKs once you've picked providers:
 
 ```ts
-import { setAnalytics } from '@mgf/analytics';
 import { setAds, setIAP } from '@mgf/monetization';
-
-setAnalytics(new PostHogAnalytics(/* … */));
 setAds(new AdMobAds(/* … */));
 setIAP(new RevenueCatIAP(/* … */));
 ```
 
-The noop impls log in dev so you can see events firing before you commit to a vendor.
+The noop impls log in dev so you can see events firing before committing to a vendor.
 
 ## Known limitations of the MVPs
 
