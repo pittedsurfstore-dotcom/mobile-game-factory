@@ -11,15 +11,21 @@ const meta = {
   emoji: '🏃',
 };
 
-const W = 320;
-const H = 220;
-const GROUND = H - 40;
-const RUNNER_X = 60;
-const RUNNER_SIZE = 30;
-const GRAVITY = 1600;
-const JUMP_V = -620;
-
-type Obstacle = { x: number; w: number; h: number };
+import {
+  GROUND,
+  H,
+  INITIAL_SPEED,
+  JUMP_V,
+  RUNNER_SIZE,
+  RUNNER_X,
+  W,
+  type Obstacle,
+  applyGravity,
+  canJump,
+  nextSpeed as advanceSpeed,
+  obstacleCollides,
+  spawnInterval,
+} from './logic';
 
 function Game() {
   const [score, setScore] = useState(0);
@@ -27,7 +33,7 @@ function Game() {
   const yRef = useRef(GROUND - RUNNER_SIZE);
   const vyRef = useRef(0);
   const obsRef = useRef<Obstacle[]>([]);
-  const speedRef = useRef(180);
+  const speedRef = useRef(INITIAL_SPEED);
   const spawnAccRef = useRef(0);
   const rngRef = useRef(mulberry32(Date.now() & 0xffffffff));
   const [tick, setTick] = useState(0);
@@ -36,33 +42,24 @@ function Game() {
   useGameLoop(
     (dt) => {
       if (over) return;
-      vyRef.current += GRAVITY * dt;
-      yRef.current += vyRef.current * dt;
-      if (yRef.current >= GROUND - RUNNER_SIZE) {
-        yRef.current = GROUND - RUNNER_SIZE;
-        vyRef.current = 0;
-      }
-      speedRef.current = Math.min(380, speedRef.current + 6 * dt);
+      const step = applyGravity(yRef.current, vyRef.current, dt);
+      yRef.current = step.y;
+      vyRef.current = step.vy;
+      speedRef.current = advanceSpeed(speedRef.current, dt);
       const next: Obstacle[] = [];
       for (const o of obsRef.current) {
         const nx = o.x - speedRef.current * dt;
         if (nx + o.w > 0) next.push({ ...o, x: nx });
       }
       spawnAccRef.current += dt;
-      const interval = Math.max(0.6, 1.6 - speedRef.current / 400);
-      if (spawnAccRef.current >= interval) {
+      if (spawnAccRef.current >= spawnInterval(speedRef.current)) {
         spawnAccRef.current = 0;
         const big = rngRef.current() > 0.6;
         next.push({ x: W + 20, w: big ? 26 : 18, h: big ? 36 : 24 });
       }
       obsRef.current = next;
       for (const o of next) {
-        if (
-          RUNNER_X < o.x + o.w &&
-          RUNNER_X + RUNNER_SIZE > o.x &&
-          yRef.current + RUNNER_SIZE > GROUND - o.h &&
-          yRef.current < GROUND
-        ) {
+        if (obstacleCollides(yRef.current, o)) {
           setOver(true);
           analytics().track('game_over', { id: meta.id, score });
           submit(score);
@@ -77,14 +74,14 @@ function Game() {
 
   const jump = () => {
     if (over) return;
-    if (yRef.current >= GROUND - RUNNER_SIZE - 1) vyRef.current = JUMP_V;
+    if (canJump(yRef.current)) vyRef.current = JUMP_V;
   };
 
   const reset = useCallback(() => {
     yRef.current = GROUND - RUNNER_SIZE;
     vyRef.current = 0;
     obsRef.current = [];
-    speedRef.current = 180;
+    speedRef.current = INITIAL_SPEED;
     spawnAccRef.current = 0;
     rngRef.current = mulberry32(Date.now() & 0xffffffff);
     setScore(0);

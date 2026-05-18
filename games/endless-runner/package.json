@@ -19,6 +19,7 @@
     "@types/react": "~18.3.12"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
   }
 }

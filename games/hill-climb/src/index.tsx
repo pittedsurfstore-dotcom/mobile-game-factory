@@ -3,6 +3,18 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
 import { useGameLoop, useHighScore, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
+import {
+  HORIZON,
+  INITIAL_FUEL,
+  SAMPLES,
+  VIEW_H,
+  burnFuel,
+  distanceFromCamera,
+  isCrashed,
+  nextSpeed as advanceSpeed,
+  terrainY,
+  tiltAt,
+} from './logic';
 
 const meta = {
   id: 'hill-climb' as const,
@@ -11,17 +23,9 @@ const meta = {
   emoji: '🚙',
 };
 
-const VIEW_H = 240;
-const HORIZON = VIEW_H * 0.75;
-const SAMPLES = 60;
-
-function terrainY(x: number): number {
-  return Math.sin(x * 0.012) * 30 + Math.sin(x * 0.04) * 12 + Math.sin(x * 0.001 + 1.2) * 50;
-}
-
 function Game() {
   const [distance, setDistance] = useState(0);
-  const [fuel, setFuel] = useState(100);
+  const [fuel, setFuel] = useState(INITIAL_FUEL);
   const [speed, setSpeed] = useState(0);
   const [tilt, setTilt] = useState(0);
   const [over, setOver] = useState(false);
@@ -32,22 +36,18 @@ function Game() {
   useGameLoop(
     (dt) => {
       if (over) return;
-      let nextSpeed = speed;
-      if (inputRef.current === 'gas') nextSpeed = Math.min(160, nextSpeed + 60 * dt);
-      else if (inputRef.current === 'brake') nextSpeed = Math.max(-40, nextSpeed - 90 * dt);
-      else nextSpeed *= 1 - 0.4 * dt;
-      const camera = cameraRef.current + nextSpeed * dt;
-      const slope = terrainY(camera + 20) - terrainY(camera);
-      const newTilt = Math.atan2(slope, 20);
-      const nextFuel = Math.max(0, fuel - (Math.abs(nextSpeed) * 0.04 + 1) * dt);
+      const ns = advanceSpeed(speed, inputRef.current, dt);
+      const camera = cameraRef.current + ns * dt;
+      const newTilt = tiltAt(camera);
+      const nextFuel = burnFuel(fuel, ns, dt);
       cameraRef.current = camera;
-      setSpeed(nextSpeed);
+      setSpeed(ns);
       setTilt(newTilt);
-      setDistance(Math.max(0, Math.floor(camera / 5)));
+      setDistance(distanceFromCamera(camera));
       setFuel(nextFuel);
-      if (nextFuel <= 0 || Math.abs(newTilt) > 1.1) {
+      if (isCrashed(newTilt, nextFuel)) {
         setOver(true);
-        const score = Math.max(0, Math.floor(camera / 5));
+        const score = distanceFromCamera(camera);
         analytics().track('game_over', { id: meta.id, score });
         submit(score);
       }
@@ -59,7 +59,7 @@ function Game() {
     cameraRef.current = 0;
     inputRef.current = null;
     setDistance(0);
-    setFuel(100);
+    setFuel(INITIAL_FUEL);
     setSpeed(0);
     setTilt(0);
     setOver(false);

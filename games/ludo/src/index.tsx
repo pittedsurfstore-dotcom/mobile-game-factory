@@ -11,8 +11,7 @@ const meta = {
   emoji: '🎲',
 };
 
-const TRACK = 30;
-const SHORTCUTS: Record<number, number> = { 4: 12, 9: 20, 15: 5, 22: 11, 25: 28 };
+import { SHORTCUTS, TRACK, advance, hasWon, rollDie, scoreForRolls } from './logic';
 
 function Game() {
   const rngRef = useRef(mulberry32(Date.now() & 0xffffffff));
@@ -28,19 +27,18 @@ function Game() {
     setRolling(true);
     let ticks = 0;
     const interval = setInterval(() => {
-      setDie(Math.floor(rngRef.current() * 6) + 1);
+      setDie(rollDie(rngRef.current));
       ticks++;
       if (ticks >= 6) {
         clearInterval(interval);
-        const value = Math.floor(rngRef.current() * 6) + 1;
+        const value = rollDie(rngRef.current);
         setDie(value);
         setRolls((r) => r + 1);
         setPos((p) => {
-          let np = Math.min(TRACK, p + value);
-          if (SHORTCUTS[np] != null) np = SHORTCUTS[np]!;
-          if (np >= TRACK) {
+          const np = advance(p, value, SHORTCUTS);
+          if (hasWon(np)) {
             setWon(true);
-            const score = Math.max(0, 200 - rolls * 5);
+            const score = scoreForRolls(rolls + 1);
             analytics().track('game_over', { id: meta.id, rolls: rolls + 1, score });
             submit(score);
           }
