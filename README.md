@@ -2,6 +2,9 @@
 
 Expo + React Native + TypeScript monorepo. One launcher app, nine playable game MVPs, shared infrastructure for analytics / ads / IAP / persistence.
 
+[![CI](https://github.com/pittedsurfstore-dotcom/mobile-game-factory/actions/workflows/ci.yml/badge.svg)](https://github.com/pittedsurfstore-dotcom/mobile-game-factory/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 ## Layout
 
 ```
