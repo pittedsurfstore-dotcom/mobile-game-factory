@@ -1,0 +1,44 @@
+{
+  "name": "@mgf/mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"(no lint configured)\""
+  },
+  "dependencies": {
+    "expo": "~52.0.0",
+    "expo-status-bar": "~2.0.0",
+    "react": "18.3.1",
+    "react-native": "0.76.3",
+    "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.1.0",
+    "react-native-gesture-handler": "~2.20.2",
+    "@react-navigation/native": "^7.0.0",
+    "@react-navigation/native-stack": "^7.0.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@mgf/game-core": "workspace:*",
+    "@mgf/ui": "workspace:*",
+    "@mgf/analytics": "workspace:*",
+    "@mgf/monetization": "workspace:*",
+    "@mgf/block-puzzle": "workspace:*",
+    "@mgf/mahjong": "workspace:*",
+    "@mgf/match-3": "workspace:*",
+    "@mgf/idle-restaurant": "workspace:*",
+    "@mgf/hill-climb": "workspace:*",
+    "@mgf/endless-runner": "workspace:*",
+    "@mgf/virtual-pet": "workspace:*",
+    "@mgf/ludo": "workspace:*",
+    "@mgf/pool-lite": "workspace:*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~18.3.12",
+    "typescript": "^5.5.4"
+  }
+}

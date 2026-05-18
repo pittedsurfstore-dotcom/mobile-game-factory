@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Mobile Game Factory",
+    "slug": "mobile-game-factory",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "scheme": "mgf",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.mgf.app" },
+    "android": { "package": "com.mgf.app" },
+    "web": { "bundler": "metro" }
+  }
+}

@@ -1,0 +1,15 @@
+node_modules
+.expo
+.expo-shared
+dist
+build
+.turbo
+.DS_Store
+*.log
+.env
+.env.local
+ios/Pods
+android/.gradle
+android/build
+android/app/build
+coverage

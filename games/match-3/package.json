@@ -1,0 +1,24 @@
+{
+  "name": "@mgf/match-3",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.tsx",
+  "types": "src/index.tsx",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "dependencies": {
+    "@mgf/game-core": "workspace:*",
+    "@mgf/ui": "workspace:*",
+    "@mgf/analytics": "workspace:*",
+    "@mgf/monetization": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/react": "~18.3.12"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
