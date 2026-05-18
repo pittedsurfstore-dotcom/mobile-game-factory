@@ -194,6 +194,31 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 - The five CI jobs must be green. PRs cannot merge with any job red.
 - The pre-commit hook means your local + CI states should agree. If they don't, that's a bug — file an issue.
 
+## EAS preview builds
+
+`.github/workflows/eas-preview.yml` queues an EAS build on every push to `main` and on manual `workflow_dispatch`. The `preview` profile in [`apps/mobile/eas.json`](./apps/mobile/eas.json) produces:
+
+- **iOS Simulator** build (no signing, no Apple Developer account required) — install in any Simulator with `xcrun simctl install`
+- **Android APK** (debug-signed) — sideload onto any device
+
+The workflow is **gated on an `EXPO_TOKEN` repo secret** so it doesn't fail before you've set it up. The job skips with an explanatory step summary if the token is missing.
+
+### One-time setup
+
+1. Create an Expo account: <https://expo.dev/signup>
+2. From `apps/mobile/`, run `npx eas-cli login` then `npx eas-cli project:init`. This writes the EAS project ID into `app.json` under `extra.eas.projectId`. Commit that change.
+3. Generate a non-interactive token: <https://expo.dev/accounts/[you]/settings/access-tokens>. Copy it.
+4. On GitHub: **Settings → Secrets and variables → Actions → New repository secret**. Name: `EXPO_TOKEN`. Paste the value.
+5. Push any commit to `main` (or click _Run workflow_ on the **EAS Preview Build** action). The job will queue a build on EAS servers (~10–20 min); the link to the build artifact appears in the EAS dashboard.
+
+The job uses `--no-wait`, so the CI run finishes in ~30 s — the build itself runs on Expo's servers and you get notified there.
+
+### Triggering manually
+
+```bash
+gh workflow run eas-preview.yml
+```
+
 ## Common pnpm gotchas
 
 - **Node-linker is `hoisted`**, not pnpm's default `isolated`. Set in [`.npmrc`](./.npmrc). This is what makes Metro happy with React Native's `@babel/runtime` resolution. Don't change it without a Metro bundle test.
