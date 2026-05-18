@@ -1,27 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
-import { useHighScore, mulberry32, type GameModule } from '@mgf/game-core';
+import { useHighScore, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
-
-const ROWS = 5;
-const COLS = 6;
-const TOTAL = ROWS * COLS;
-const SYMBOLS = ['🀇', '🀈', '🀉', '🀊', '🀋', '🀌', '🀍', '🀎', '🀐', '🀑', '🀒', '🀓', '🀔', '🀕', '🀖'];
-
-type Tile = { id: number; sym: string; matched: boolean };
-
-function deal(seed: number): Tile[] {
-  const pairs = TOTAL / 2;
-  const syms: string[] = [];
-  for (let i = 0; i < pairs; i++) syms.push(SYMBOLS[i % SYMBOLS.length]!, SYMBOLS[i % SYMBOLS.length]!);
-  const rand = mulberry32(seed);
-  for (let i = syms.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [syms[i], syms[j]] = [syms[j]!, syms[i]!];
-  }
-  return syms.map((sym, id) => ({ id, sym, matched: false }));
-}
+import { COLS, ROWS, type Tile, deal, scoreForMoves } from './logic';
 
 const meta = {
   id: 'mahjong' as const,
@@ -52,7 +34,7 @@ function Game() {
       setFirst(null);
       setSecond(null);
       if (next.every((t) => t.matched)) {
-        const score = Math.max(0, 1000 - moves * 10);
+        const score = scoreForMoves(moves);
         analytics().track('game_over', { id: meta.id, moves, score });
         submit(score);
         setDone(true);
