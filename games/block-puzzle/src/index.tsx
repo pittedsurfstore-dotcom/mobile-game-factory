@@ -3,7 +3,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
 import { useGameLoop, useHighScore, mulberry32, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
-import { ads } from '@mgf/monetization';
+import { ads, iap } from '@mgf/monetization';
+
+const NOADS_ENTITLEMENT = 'no_ads';
 import {
   COLS,
   COLORS,
@@ -56,8 +58,22 @@ function Game() {
     analytics().track('game_restart', { id: meta.id });
   }, [newPiece]);
 
+  const grantContinue = useCallback(() => {
+    setBoard((b) => clearBottomRows(b, CONTINUE_CLEAR_ROWS));
+    setPiece(newPiece());
+    setOver(false);
+    setRunning(true);
+    setUsedContinue(true);
+    dropAccRef.current = 0;
+  }, [newPiece]);
+
   const continueWithAd = useCallback(async () => {
     if (usedContinue || waitingForAd) return;
+    if (iap().isEntitled(NOADS_ENTITLEMENT)) {
+      analytics().track('continue_entitled', { id: meta.id, score });
+      grantContinue();
+      return;
+    }
     setWaitingForAd(true);
     analytics().track('ad_continue_requested', { id: meta.id, score });
     try {
@@ -67,16 +83,17 @@ function Game() {
         return;
       }
       analytics().track('ad_continue_granted', { id: meta.id, score });
-      setBoard((b) => clearBottomRows(b, CONTINUE_CLEAR_ROWS));
-      setPiece(newPiece());
-      setOver(false);
-      setRunning(true);
-      setUsedContinue(true);
-      dropAccRef.current = 0;
+      grantContinue();
     } finally {
       setWaitingForAd(false);
     }
-  }, [newPiece, score, usedContinue, waitingForAd]);
+  }, [grantContinue, score, usedContinue, waitingForAd]);
+
+  const continueButtonLabel = waitingForAd
+    ? 'Loading ad…'
+    : iap().isEntitled(NOADS_ENTITLEMENT)
+      ? `Continue (clear bottom ${CONTINUE_CLEAR_ROWS} rows)`
+      : `Watch ad to clear bottom ${CONTINUE_CLEAR_ROWS} rows`;
 
   const lockAndSpawn = useCallback(
     (b: Board, p: typeof piece) => {
@@ -166,11 +183,7 @@ function Game() {
           <Text style={styles.overText}>Game Over</Text>
           <Text style={styles.overSub}>Score {score}</Text>
           {!usedContinue && (
-            <Button
-              label={waitingForAd ? 'Loading ad…' : `Watch ad to clear bottom ${CONTINUE_CLEAR_ROWS} rows`}
-              onPress={continueWithAd}
-              disabled={waitingForAd}
-            />
+            <Button label={continueButtonLabel} onPress={continueWithAd} disabled={waitingForAd} />
           )}
           <Button label="Play again" variant={usedContinue ? 'primary' : 'ghost'} onPress={reset} />
         </View>

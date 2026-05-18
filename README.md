@@ -110,16 +110,31 @@ if (rewarded) doubleScore();
 
 Before shipping to production, swap the test App IDs in `app.json` for your real ones.
 
-### IAP (still stubbed)
+### IAP — RevenueCat (wired in, opt-in via env)
 
-Swap in RevenueCat (or StoreKit / Play Billing direct) once you have products defined:
+`apps/mobile/src/iap-revenuecat.ts` adapts `react-native-purchases` to the `@mgf/monetization` `IAP` interface. `App.tsx` activates it only when `EXPO_PUBLIC_REVENUECAT_KEY` is present; otherwise the noop impl stays. The SDK is required lazily so Expo Go can still load the JS bundle when IAP is off. Like AdMob, **real purchases require a development build** — Expo Go can't show platform receipts.
 
-```ts
-import { setIAP } from '@mgf/monetization';
-setIAP(new RevenueCatIAP(/* … */));
+To enable:
+
+```bash
+export EXPO_PUBLIC_REVENUECAT_KEY=appl_xxx_or_goog_xxx   # public SDK key from RevenueCat dashboard
+# Optional comma-separated product identifiers that purchase() should resolve against
+export EXPO_PUBLIC_REVENUECAT_PRODUCTS=com.mgf.no_ads,com.mgf.tip
+npx expo run:ios   # or run:android
 ```
 
-The noop impls log in dev so you can see events firing before committing to a vendor.
+Games can check entitlements via the interface:
+
+```ts
+import { iap } from '@mgf/monetization';
+if (iap().isEntitled('no_ads')) {
+  // skip the ad, grant the reward directly
+}
+```
+
+The `block-puzzle` continue flow already uses this: if the player owns the `no_ads` entitlement, the game-over button switches from _"Watch ad to clear bottom 3 rows"_ to _"Continue (clear bottom 3 rows)"_ and grants the reward without an ad. The entitlement identifier `no_ads` must match what you configure in the RevenueCat dashboard.
+
+A "buy no-ads" purchase UI is not wired yet — call `iap().purchase('your.product.id')` from wherever you want to surface it.
 
 ## Known limitations of the MVPs
 

@@ -6,12 +6,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStore } from '@mgf/game-core';
 import { analytics, setAnalytics } from '@mgf/analytics';
-import { setAds } from '@mgf/monetization';
+import { setAds, setIAP } from '@mgf/monetization';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameHostScreen } from './src/screens/GameHostScreen';
 import { games } from './src/games';
 import { createPostHogAnalytics } from './src/analytics-posthog';
 import { createAdMobAds } from './src/ads-admob';
+import { createRevenueCatIAP } from './src/iap-revenuecat';
 
 const POSTHOG_KEY = process.env.EXPO_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST;
@@ -26,6 +27,15 @@ if (process.env.EXPO_PUBLIC_ADMOB_ENABLED === '1') {
       interstitialUnitId: process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL,
     }),
   );
+}
+
+const REVENUECAT_KEY = process.env.EXPO_PUBLIC_REVENUECAT_KEY;
+if (REVENUECAT_KEY) {
+  const productList = (process.env.EXPO_PUBLIC_REVENUECAT_PRODUCTS ?? '')
+    .split(',')
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+  setIAP(createRevenueCatIAP(REVENUECAT_KEY, productList));
 }
 
 setStore({
