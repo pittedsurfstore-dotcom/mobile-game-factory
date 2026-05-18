@@ -24,13 +24,13 @@ games/
   pool-lite/              Drag-aim physics with pockets
 ```
 
+For the full dev loop, conventions, and how to add a new game, see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## Run it
 
-> Note: this repo has not had `pnpm install` run yet. Install dependencies first.
-
 ```bash
-pnpm install
-pnpm mobile           # starts Expo (then press i / a / w)
+corepack pnpm install
+corepack pnpm mobile   # starts Expo (then press i / a / w)
 ```
 
 Workspace-wide checks:
