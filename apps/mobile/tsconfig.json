@@ -4,5 +4,13 @@
     "jsx": "react-native",
     "types": ["react-native"]
   },
-  "include": ["index.ts", "App.tsx", "src", "../../packages/**/src", "../../games/**/src"]
+  "include": ["index.ts", "App.tsx", "src", "../../packages/**/src", "../../games/**/src"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "../../packages/**/*.test.ts",
+    "../../packages/**/*.test.tsx",
+    "../../games/**/*.test.ts",
+    "../../games/**/*.test.tsx"
+  ]
 }

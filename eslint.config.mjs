@@ -20,7 +20,7 @@ export default tseslint.config(
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node, __DEV__: 'readonly' },
+      globals: { ...globals.browser, ...globals.node, ...globals.jest, __DEV__: 'readonly' },
     },
     plugins: { 'react-hooks': reactHooks },
     rules: {

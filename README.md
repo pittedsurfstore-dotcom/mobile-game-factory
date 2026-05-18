@@ -33,11 +33,17 @@ pnpm install
 pnpm mobile           # starts Expo (then press i / a / w)
 ```
 
-Per-game type checking:
+Workspace-wide checks:
 
 ```bash
-pnpm typecheck
+pnpm typecheck   # tsc -p apps/mobile/tsconfig.json (covers all packages + games)
+pnpm lint        # eslint 9 flat config
+pnpm test        # jest, all package test suites
 ```
+
+## Tests
+
+Jest is configured at the monorepo root with a multi-project config that picks up `packages/*/jest.config.js`. Currently `@mgf/game-core` has 17 tests across 4 suites covering `mulberry32`, `randInt`, `pick`, the in-memory `KVStore`, `useGameLoop` (fake timers), and `useHighScore` (mock store). All four checks — `typecheck`, `lint`, `test`, and `expo-doctor` — run on every push and PR via `.github/workflows/ci.yml`.
 
 ## How a game is wired
 
