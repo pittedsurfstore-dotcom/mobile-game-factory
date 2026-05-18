@@ -3,6 +3,20 @@ import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { Button, Hud, theme } from '@mgf/ui';
 import { useGameLoop, useHighScore, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
+import {
+  FRICTION,
+  H,
+  MAX_PULL,
+  POCKETS,
+  POCKET_R,
+  POWER,
+  R,
+  STOP_THRESHOLD,
+  W,
+  type Ball,
+  initialBalls,
+  isStopped,
+} from './logic';
 
 const meta = {
   id: 'pool-lite' as const,
@@ -10,44 +24,6 @@ const meta = {
   blurb: 'Drag from the cue ball. Sink the colors.',
   emoji: '🎱',
 };
-
-const W = 320;
-const H = 360;
-const R = 11;
-const POCKET_R = 18;
-const FRICTION = 0.985;
-const MAX_PULL = 110;
-const POWER = 5;
-
-type Ball = { x: number; y: number; vx: number; vy: number; color: string; sunk: boolean; cue?: boolean };
-
-const POCKETS = [
-  { x: 0, y: 0 },
-  { x: W, y: 0 },
-  { x: 0, y: H },
-  { x: W, y: H },
-  { x: W / 2, y: 0 },
-  { x: W / 2, y: H },
-];
-
-function initialBalls(): Ball[] {
-  const cue: Ball = { x: W / 2, y: H - 60, vx: 0, vy: 0, color: '#f5f5f5', sunk: false, cue: true };
-  const colors = ['#ff5572', '#7cf8ff', '#ffd34d', '#7fdc7f', '#c779ff', '#ffa552'];
-  const rack: Ball[] = [];
-  const cx = W / 2;
-  const cy = 100;
-  let i = 0;
-  for (let row = 0; row < 3; row++) {
-    for (let col = 0; col <= row; col++) {
-      if (i >= colors.length) break;
-      const x = cx + (col - row / 2) * (R * 2.1);
-      const y = cy + row * R * 1.85;
-      rack.push({ x, y, vx: 0, vy: 0, color: colors[i]!, sunk: false });
-      i++;
-    }
-  }
-  return [cue, ...rack];
-}
 
 function Game() {
   const [balls, setBalls] = useState<Ball[]>(initialBalls);
@@ -68,8 +44,8 @@ function Game() {
         b.y += b.vy * dt * 60;
         b.vx *= FRICTION;
         b.vy *= FRICTION;
-        if (Math.abs(b.vx) < 0.02) b.vx = 0;
-        if (Math.abs(b.vy) < 0.02) b.vy = 0;
+        if (Math.abs(b.vx) < STOP_THRESHOLD) b.vx = 0;
+        if (Math.abs(b.vy) < STOP_THRESHOLD) b.vy = 0;
         if (b.x - R < 0) {
           b.x = R;
           b.vx = -b.vx * 0.85;
@@ -141,7 +117,7 @@ function Game() {
     { running: !over, fps: 60 },
   );
 
-  const stopped = balls.every((b) => Math.abs(b.vx) < 0.02 && Math.abs(b.vy) < 0.02);
+  const stopped = balls.every((b) => isStopped(b));
 
   const responder = useRef(
     PanResponder.create({
