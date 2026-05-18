@@ -23,6 +23,7 @@
     "@react-navigation/native-stack": "^7.0.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "posthog-react-native": "^3.5.0",
+    "react-native-google-mobile-ads": "^14.7.0",
     "@mgf/game-core": "workspace:*",
     "@mgf/ui": "workspace:*",
     "@mgf/analytics": "workspace:*",

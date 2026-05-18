@@ -71,13 +71,38 @@ export EXPO_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com   # optional; defaults 
 corepack pnpm mobile
 ```
 
-### Ads + IAP (still stubbed)
+### Ads — AdMob (wired in, opt-in via env)
 
-Swap in the real SDKs once you've picked providers:
+`apps/mobile/src/ads-admob.ts` adapts `react-native-google-mobile-ads` to the `@mgf/monetization` `Ads` interface. `App.tsx` activates it only when `EXPO_PUBLIC_ADMOB_ENABLED=1`; otherwise the noop impl stays. The SDK is imported via `require()` inside a lazy factory so Expo Go can still load the JS bundle when AdMob is off.
+
+**AdMob requires a development build** (`expo prebuild` + `eas build` or `npx expo run:ios` / `run:android`) — it ships native code and will not work in Expo Go. The `app.json` plugin entry is configured with Google's official AdMob test App IDs (safe to ship in dev — they never bill real money).
+
+To enable in a dev build:
+
+```bash
+export EXPO_PUBLIC_ADMOB_ENABLED=1
+# Optional: real ad unit IDs (defaults to Google's test unit IDs)
+export EXPO_PUBLIC_ADMOB_REWARDED=ca-app-pub-XXX/YYY
+export EXPO_PUBLIC_ADMOB_INTERSTITIAL=ca-app-pub-XXX/ZZZ
+npx expo run:ios   # or run:android
+```
+
+Games can request an ad anywhere via the interface:
 
 ```ts
-import { setAds, setIAP } from '@mgf/monetization';
-setAds(new AdMobAds(/* … */));
+import { ads } from '@mgf/monetization';
+const { rewarded } = await ads().show('rewarded');
+if (rewarded) doubleScore();
+```
+
+Before shipping to production, swap the test App IDs in `app.json` for your real ones.
+
+### IAP (still stubbed)
+
+Swap in RevenueCat (or StoreKit / Play Billing direct) once you have products defined:
+
+```ts
+import { setIAP } from '@mgf/monetization';
 setIAP(new RevenueCatIAP(/* … */));
 ```
 

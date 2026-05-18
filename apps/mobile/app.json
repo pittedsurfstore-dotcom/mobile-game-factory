@@ -9,6 +9,16 @@
     "scheme": "mgf",
     "ios": { "supportsTablet": true, "bundleIdentifier": "com.mgf.app" },
     "android": { "package": "com.mgf.app" },
-    "web": { "bundler": "metro" }
+    "web": { "bundler": "metro" },
+    "plugins": [
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "userTrackingUsageDescription": "This lets us show ads that are more relevant to you."
+        }
+      ]
+    ]
   }
 }
