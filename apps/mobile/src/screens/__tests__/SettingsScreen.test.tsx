@@ -1,4 +1,3 @@
-import React from 'react';
 import { Alert } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { setAnalytics } from '@mgf/analytics';
@@ -32,6 +31,19 @@ const NO_ADS_PRODUCT: Product = {
   title: 'Remove ads',
 };
 
+/**
+ * Renders the screen and flushes the initial async getProducts() microtask
+ * before returning, so the surrounding test never witnesses the post-mount
+ * setState and React stops warning about updates outside act(...).
+ */
+async function renderSettings() {
+  const result = render(<SettingsScreen />);
+  // flush the initial useEffect's async getProducts() microtask so React stops
+  // warning about updates outside act(...)
+  await act(async () => {});
+  return result;
+}
+
 describe('SettingsScreen', () => {
   beforeEach(() => {
     setAnalytics(noopAnalytics);
@@ -42,40 +54,38 @@ describe('SettingsScreen', () => {
     jest.restoreAllMocks();
   });
 
-  it('renders both Remove ads and Restore sections', () => {
+  it('renders both Remove ads and Restore sections', async () => {
     setIAP(makeIAP());
-    const { getAllByText, getByText } = render(<SettingsScreen />);
-    // "Remove ads" appears both as section heading and as the button label, so use getAllByText
+    const { getAllByText, getByText } = await renderSettings();
     expect(getAllByText('Remove ads').length).toBeGreaterThan(0);
     expect(getByText('Restore')).toBeTruthy();
     expect(getByText('Restore purchases')).toBeTruthy();
   });
 
-  it('shows the entitled confirmation when no_ads is owned', () => {
+  it('shows the entitled confirmation when no_ads is owned', async () => {
     setIAP(makeIAP({ isEntitled: (id) => id === 'no_ads' }));
-    const { getByText, queryByText } = render(<SettingsScreen />);
+    const { getByText, queryByText } = await renderSettings();
     expect(getByText(/Ads removed/i)).toBeTruthy();
-    // Buy button is not rendered when entitled
     expect(queryByText(/^Remove ads —/)).toBeNull();
   });
 
   it('shows the real price string when getProducts returns the no-ads SKU', async () => {
     setIAP(makeIAP({ getProducts: async () => [NO_ADS_PRODUCT] }));
-    const { findByText } = render(<SettingsScreen />);
-    expect(await findByText(`Remove ads — ${NO_ADS_PRODUCT.priceString}`)).toBeTruthy();
+    const { getByText } = await renderSettings();
+    expect(getByText(`Remove ads — ${NO_ADS_PRODUCT.priceString}`)).toBeTruthy();
   });
 
   it('shows the not-configured message when getProducts is empty', async () => {
     setIAP(makeIAP({ getProducts: async () => [] }));
-    const { findByText } = render(<SettingsScreen />);
-    expect(await findByText(/not configured in this build/i)).toBeTruthy();
+    const { getByText } = await renderSettings();
+    expect(getByText(/not configured in this build/i)).toBeTruthy();
   });
 
   it('calls iap.purchase(NOADS_PRODUCT_ID) when the buy button is pressed', async () => {
     const purchase = jest.fn(async () => ({ purchased: true }));
     setIAP(makeIAP({ getProducts: async () => [NO_ADS_PRODUCT], purchase }));
-    const { findByText } = render(<SettingsScreen />);
-    const buyBtn = await findByText(`Remove ads — ${NO_ADS_PRODUCT.priceString}`);
+    const { getByText } = await renderSettings();
+    const buyBtn = getByText(`Remove ads — ${NO_ADS_PRODUCT.priceString}`);
     await act(async () => {
       fireEvent.press(buyBtn);
     });
@@ -86,8 +96,8 @@ describe('SettingsScreen', () => {
     setIAP(
       makeIAP({ getProducts: async () => [NO_ADS_PRODUCT], purchase: async () => ({ purchased: false }) }),
     );
-    const { findByText } = render(<SettingsScreen />);
-    const buyBtn = await findByText(`Remove ads — ${NO_ADS_PRODUCT.priceString}`);
+    const { getByText } = await renderSettings();
+    const buyBtn = getByText(`Remove ads — ${NO_ADS_PRODUCT.priceString}`);
     await act(async () => {
       fireEvent.press(buyBtn);
     });
@@ -97,7 +107,7 @@ describe('SettingsScreen', () => {
   it('calls iap.restore when the restore button is pressed and reports the result', async () => {
     const restore = jest.fn(async () => {});
     setIAP(makeIAP({ restore }));
-    const { getByText } = render(<SettingsScreen />);
+    const { getByText } = await renderSettings();
     await act(async () => {
       fireEvent.press(getByText('Restore purchases'));
     });
