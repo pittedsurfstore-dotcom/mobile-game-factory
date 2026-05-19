@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Hud } from '@mgf/ui';
-import { useGameLoop, useHighScore, mulberry32, type GameModule } from '@mgf/game-core';
+import { feedback, useGameLoop, useHighScore, mulberry32, type GameModule } from '@mgf/game-core';
 import { analytics } from '@mgf/analytics';
 import { NOADS_ENTITLEMENT, ads, iap } from '@mgf/monetization';
 import {
@@ -95,6 +95,8 @@ function Game() {
       if (nCleared > 0) {
         setScore((s) => s + [0, 100, 300, 500, 800][nCleared]!);
         dropIntervalRef.current = Math.max(0.12, dropIntervalRef.current - 0.01);
+        feedback().haptic('success');
+        feedback().sound('success');
       }
       const next = newPiece();
       if (collides(cleared, next.shape, next.x, next.y)) {
@@ -102,6 +104,8 @@ function Game() {
         setRunning(false);
         setOver(true);
         analytics().track('game_over', { id: meta.id, score });
+        feedback().haptic('error');
+        feedback().sound('fail');
         submit(score);
         return;
       }
@@ -125,14 +129,19 @@ function Game() {
     { running },
   );
 
-  const move = (dx: number) =>
+  const move = (dx: number) => {
+    feedback().haptic('tap');
     setPiece((p) => (collides(board, p.shape, p.x + dx, p.y) ? p : { ...p, x: p.x + dx }));
-  const rotateAct = () =>
+  };
+  const rotateAct = () => {
+    feedback().haptic('select');
     setPiece((p) => {
       const r = rotate(p.shape);
       return collides(board, r, p.x, p.y) ? p : { ...p, shape: r };
     });
+  };
   const drop = () => {
+    feedback().haptic('tap');
     setPiece((p) => {
       let ny = p.y;
       while (!collides(board, p.shape, p.x, ny + 1)) ny++;

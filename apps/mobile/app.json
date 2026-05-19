@@ -7,8 +7,10 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "scheme": "mgf",
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.mgf.app" },
-    "android": { "package": "com.mgf.app" },
+    "primaryColor": "#7cf8ff",
+    "backgroundColor": "#0b0d10",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.rocinante.games" },
+    "android": { "package": "com.rocinante.games" },
     "web": { "bundler": "metro" },
     "plugins": [
       [

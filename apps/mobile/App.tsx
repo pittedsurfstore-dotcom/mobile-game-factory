@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setStore } from '@mgf/game-core';
+import { setFeedback, setStore } from '@mgf/game-core';
 import { analytics, setAnalytics } from '@mgf/analytics';
 import { setAds, setIAP } from '@mgf/monetization';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -14,6 +14,9 @@ import { games } from './src/games';
 import { createPostHogAnalytics } from './src/analytics-posthog';
 import { createAdMobAds } from './src/ads-admob';
 import { createRevenueCatIAP } from './src/iap-revenuecat';
+import { createDeviceFeedback } from './src/feedback-impl';
+
+setFeedback(createDeviceFeedback());
 
 const POSTHOG_KEY = process.env.EXPO_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST;

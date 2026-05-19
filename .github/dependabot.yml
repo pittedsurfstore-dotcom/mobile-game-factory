@@ -34,6 +34,14 @@ updates:
       # is really a breaking move — ignore minor + major.
       - dependency-name: 'react-native'
         update-types: ['version-update:semver-minor', 'version-update:semver-major']
+      # These RN peer packages are version-locked to the active Expo SDK by
+      # `npx expo install --check`. Bumping them outside an SDK upgrade breaks
+      # the Metro bundle even when typecheck / lint / tests all pass. Reverted
+      # 4 such bumps that snuck through on 2026-05-19.
+      - dependency-name: 'react-native-safe-area-context'
+      - dependency-name: 'react-native-screens'
+      - dependency-name: 'react-native-gesture-handler'
+      - dependency-name: '@react-native-async-storage/async-storage'
       # React 18.3.1 is pinned by RN 0.76. Major bumps break the hook runtime.
       - dependency-name: 'react'
         update-types: ['version-update:semver-major']

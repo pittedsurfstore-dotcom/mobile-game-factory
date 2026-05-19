@@ -12,4 +12,9 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
+// posthog-react-native@4 ships subpath exports like `@posthog/core/surveys`
+// which Metro only resolves when this flag is on. Without it the iOS bundle
+// fails to find `@posthog/core/surveys`.
+config.resolver.unstable_enablePackageExports = true;
+
 module.exports = config;
