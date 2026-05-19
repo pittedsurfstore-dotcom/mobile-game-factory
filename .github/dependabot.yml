@@ -13,10 +13,13 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - 'dependencies'
+    # Note: no `include: 'scope'` here — Dependabot was producing
+    # `chore(deps)(deps): bump foo` (duplicated scope), which release-please
+    # then failed to parse as a conventional commit and silently dropped from
+    # the changelog. Single-scope `chore(deps): bump foo` parses cleanly.
     commit-message:
       prefix: 'chore(deps)'
       prefix-development: 'chore(deps-dev)'
-      include: 'scope'
     # These packages are pinned to the active Expo SDK / RN React shim / Jest core
     # version, so single-package bumps in isolation always break the test setup.
     # Patches and (for non-RN packages) minors still come through normally.
