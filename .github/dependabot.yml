@@ -1,0 +1,70 @@
+version: 2
+updates:
+  # JS/TS dependencies across the pnpm workspace.
+  # Dependabot reads `pnpm-lock.yaml` at the repo root and resolves
+  # against every workspace package automatically.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'America/New_York'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+    commit-message:
+      prefix: 'chore(deps)'
+      prefix-development: 'chore(deps-dev)'
+      include: 'scope'
+    groups:
+      # Bundle low-risk dev-tool patches into one PR so review noise stays manageable.
+      dev-tooling:
+        applies-to: version-updates
+        dependency-type: 'development'
+        update-types:
+          - 'patch'
+          - 'minor'
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@typescript-eslint/*'
+          - 'typescript-eslint'
+          - 'prettier'
+          - 'prettier-*'
+          - 'jest'
+          - 'jest-*'
+          - '@jest/*'
+          - 'ts-jest'
+          - '@testing-library/*'
+          - '@types/*'
+      # Group the React/RN/Expo trio so version-aligned bumps land together.
+      expo-react-native:
+        applies-to: version-updates
+        update-types:
+          - 'patch'
+          - 'minor'
+        patterns:
+          - 'expo'
+          - 'expo-*'
+          - 'react'
+          - 'react-*'
+          - 'react-native'
+          - 'react-native-*'
+          - '@react-navigation/*'
+
+  # GitHub Actions used by both workflows (.github/workflows/*.yml).
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'America/New_York'
+    open-pull-requests-limit: 3
+    labels:
+      - 'dependencies'
+      - 'ci'
+    commit-message:
+      prefix: 'chore(ci)'
+      include: 'scope'
