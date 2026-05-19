@@ -26,6 +26,7 @@ updates:
       # new SDK breaks the jest preset, dev-client, build pipeline, etc.
       - dependency-name: 'expo'
       - dependency-name: 'expo-*'
+      - dependency-name: 'babel-preset-expo'
       # React Native uses 0.x semver, so an apparent "minor" bump (0.76 → 0.85)
       # is really a breaking move — ignore minor + major.
       - dependency-name: 'react-native'
