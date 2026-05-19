@@ -7,3 +7,6 @@ coverage
 pnpm-lock.yaml
 .git
 *.hbc
+# release-please owns CHANGELOG.md and re-writes it with its own formatting;
+# excluding it here avoids Format-job churn after every release PR.
+CHANGELOG.md
