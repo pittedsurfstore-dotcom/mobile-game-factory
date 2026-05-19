@@ -17,6 +17,26 @@ updates:
       prefix: 'chore(deps)'
       prefix-development: 'chore(deps-dev)'
       include: 'scope'
+    # These packages are pinned to the active Expo SDK / RN React shim / Jest core
+    # version, so major bumps in isolation always break the test setup. Patches and
+    # minors still come through normally. Security advisories override ignore rules.
+    ignore:
+      - dependency-name: 'expo'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-native'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'jest'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'jest-environment-jsdom'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'jest-expo'
+        update-types: ['version-update:semver-major']
     groups:
       # Bundle low-risk dev-tool patches into one PR so review noise stays manageable.
       dev-tooling:
