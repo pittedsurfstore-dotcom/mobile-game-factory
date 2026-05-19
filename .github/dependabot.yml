@@ -18,24 +18,35 @@ updates:
       prefix-development: 'chore(deps-dev)'
       include: 'scope'
     # These packages are pinned to the active Expo SDK / RN React shim / Jest core
-    # version, so major bumps in isolation always break the test setup. Patches and
-    # minors still come through normally. Security advisories override ignore rules.
+    # version, so single-package bumps in isolation always break the test setup.
+    # Patches and (for non-RN packages) minors still come through normally.
+    # Security advisories override ignore rules.
     ignore:
+      # Expo SDK 52 cluster — bumping any of these without an `expo upgrade` to a
+      # new SDK breaks the jest preset, dev-client, build pipeline, etc.
       - dependency-name: 'expo'
-        update-types: ['version-update:semver-major']
+      - dependency-name: 'expo-*'
+      # React Native uses 0.x semver, so an apparent "minor" bump (0.76 → 0.85)
+      # is really a breaking move — ignore minor + major.
       - dependency-name: 'react-native'
-        update-types: ['version-update:semver-major']
+        update-types: ['version-update:semver-minor', 'version-update:semver-major']
+      # React 18.3.1 is pinned by RN 0.76. Major bumps break the hook runtime.
       - dependency-name: 'react'
         update-types: ['version-update:semver-major']
       - dependency-name: 'react-dom'
         update-types: ['version-update:semver-major']
       - dependency-name: '@types/react'
         update-types: ['version-update:semver-major']
+      # Jest 29 is the cluster we test against (jest-environment-jsdom, ts-jest,
+      # jest-expo all need to move together).
       - dependency-name: 'jest'
         update-types: ['version-update:semver-major']
       - dependency-name: 'jest-environment-jsdom'
         update-types: ['version-update:semver-major']
       - dependency-name: 'jest-expo'
+        update-types: ['version-update:semver-major']
+      # TypeScript 6 has language changes our tests fail on; pin to 5.x.
+      - dependency-name: 'typescript'
         update-types: ['version-update:semver-major']
     groups:
       # Bundle low-risk dev-tool patches into one PR so review noise stays manageable.
