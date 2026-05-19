@@ -113,6 +113,42 @@ if (rewarded) doubleScore();
 
 Before shipping to production, swap the test App IDs in `app.json` for your real ones.
 
+### Cloud high scores — Supabase (wired in, opt-in via env)
+
+`apps/mobile/src/cloud-score-supabase.ts` adapts `@supabase/supabase-js` to the `@mgf/game-core` `CloudHighScore` interface. `App.tsx` activates it only when both `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` are set; otherwise high scores stay local-only via AsyncStorage. Pure JS — works in Expo Go.
+
+`useHighScore` automatically reads remote on mount (catches up if you reinstalled) and writes remote on every new local high. Network failures are silent — the local score is always shown immediately.
+
+Each install gets a stable opaque `device-id` lazily generated and persisted to AsyncStorage. Cloud entries belong to that ID, so deleting the app and reinstalling will look like a fresh device (until you wire real auth).
+
+**One-time backend setup:**
+
+```sql
+create table public.high_scores (
+  id bigserial primary key,
+  device_id text not null,
+  game_id text not null,
+  score integer not null,
+  created_at timestamptz default now()
+);
+create index high_scores_game_score on public.high_scores (game_id, score desc);
+
+-- Anon-write policy (for client-side reads + inserts without auth):
+alter table public.high_scores enable row level security;
+create policy "anon insert" on public.high_scores
+  for insert to anon with check (true);
+create policy "anon read" on public.high_scores
+  for select to anon using (true);
+```
+
+Then to enable:
+
+```bash
+export EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+export EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...   # the anon (public) key
+corepack pnpm mobile
+```
+
 ### IAP — RevenueCat (wired in, opt-in via env)
 
 `apps/mobile/src/iap-revenuecat.ts` adapts `react-native-purchases` to the `@mgf/monetization` `IAP` interface. `App.tsx` activates it only when `EXPO_PUBLIC_REVENUECAT_KEY` is present; otherwise the noop impl stays. The SDK is required lazily so Expo Go can still load the JS bundle when IAP is off. Like AdMob, **real purchases require a development build** — Expo Go can't show platform receipts.

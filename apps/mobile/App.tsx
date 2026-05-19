@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setFeedback, setStore } from '@mgf/game-core';
+import { setCloudHighScore, setFeedback, setStore } from '@mgf/game-core';
 import { analytics, setAnalytics } from '@mgf/analytics';
 import { setAds, setIAP } from '@mgf/monetization';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -15,6 +15,7 @@ import { createPostHogAnalytics } from './src/analytics-posthog';
 import { createAdMobAds } from './src/ads-admob';
 import { createRevenueCatIAP } from './src/iap-revenuecat';
 import { createDeviceFeedback } from './src/feedback-impl';
+import { createSupabaseCloudHighScore } from './src/cloud-score-supabase';
 
 setFeedback(createDeviceFeedback());
 
@@ -40,6 +41,25 @@ if (REVENUECAT_KEY) {
     .map((s: string) => s.trim())
     .filter(Boolean);
   setIAP(createRevenueCatIAP(REVENUECAT_KEY, productList));
+}
+
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+if (SUPABASE_URL && SUPABASE_ANON) {
+  // A stable, opaque device ID — lazily generated on first run, persisted via
+  // the same AsyncStorage we use for local high scores. This is enough to
+  // give each install its own row in the cloud table without requiring auth.
+  // Replace with real auth later if cross-device sync becomes a goal.
+  void (async () => {
+    const DEVICE_KEY = 'cloud:device-id';
+    let deviceId = await AsyncStorage.getItem(DEVICE_KEY);
+    if (!deviceId) {
+      const rand = (Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 24);
+      deviceId = `mgf-${rand}`;
+      await AsyncStorage.setItem(DEVICE_KEY, deviceId);
+    }
+    setCloudHighScore(createSupabaseCloudHighScore(SUPABASE_URL, SUPABASE_ANON, deviceId));
+  })();
 }
 
 setStore({

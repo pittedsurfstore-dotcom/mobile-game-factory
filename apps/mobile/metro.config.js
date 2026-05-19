@@ -17,4 +17,12 @@ config.resolver.nodeModulesPaths = [
 // fails to find `@posthog/core/surveys`.
 config.resolver.unstable_enablePackageExports = true;
 
+// @supabase/supabase-js declares @opentelemetry/api as an optional peer; we
+// never use telemetry on the client so stub it out to an empty module to
+// keep Metro happy without pulling in the package.
+config.resolver.extraNodeModules = {
+  ...(config.resolver.extraNodeModules ?? {}),
+  '@opentelemetry/api': path.resolve(projectRoot, 'empty-module.js'),
+};
+
 module.exports = config;
