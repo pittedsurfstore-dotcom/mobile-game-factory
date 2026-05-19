@@ -170,6 +170,10 @@ git commit --no-verify
 
 All five must be green before merge. Total runtime is roughly 30 s wall-clock since they run in parallel.
 
+### Dependabot auto-merge
+
+`.github/workflows/dependabot-auto-merge.yml` flips Dependabot patch and minor PRs to **auto-merge** as soon as all five CI gates pass. Major bumps stay manual and get a step-summary note prompting human review. Repo-level `allow_auto_merge` is enabled. Ecosystem-locked packages (Expo SDK / React / Jest cluster) have major bumps ignored in [`.github/dependabot.yml`](./.github/dependabot.yml), so most weekly noise auto-clears without you touching it.
+
 ## Commit messages
 
 This repo uses conventional commits (`feat`, `fix`, `test`, `chore`, `refactor`, `docs`). Scope is the most-affected package or area:

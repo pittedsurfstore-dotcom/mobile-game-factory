@@ -1,0 +1,42 @@
+name: Dependabot auto-merge
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Enable auto-merge for safe Dependabot bumps
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge (patch + minor only)
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+          steps.meta.outputs.update-type == 'version-update:semver-minor'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR_URL"
+
+      - name: Skip note for major bumps
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        run: |
+          {
+            echo "### Major bump — not auto-merged"
+            echo ""
+            echo "Update type: \`${{ steps.meta.outputs.update-type }}\`"
+            echo "Package: \`${{ steps.meta.outputs.dependency-names }}\`"
+            echo ""
+            echo "Major bumps stay manual. Review the changelog, then merge if CI is green."
+          } >> "$GITHUB_STEP_SUMMARY"
