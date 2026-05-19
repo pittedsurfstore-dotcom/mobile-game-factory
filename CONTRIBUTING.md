@@ -170,6 +170,21 @@ git commit --no-verify
 
 All five must be green before merge. Total runtime is roughly 30 s wall-clock since they run in parallel.
 
+### Releases
+
+Releases are driven by [release-please](https://github.com/googleapis/release-please-action). After any push to `main` that contains conventional commits, a "release PR" is auto-opened (or updated). It includes:
+
+- `CHANGELOG.md` diff with sections grouped by commit type
+- Version bump in `package.json` (semver inferred from commit types: `feat` → minor, `fix`/`chore`/`docs` → patch, breaking-change footer → major)
+- A computed next tag (e.g. `v0.1.2`)
+
+Merging the release PR creates the tag + GitHub release automatically. **No more `gh release create` by hand** — just keep commit messages in the conventional format and the changelog writes itself.
+
+Config files at the repo root:
+
+- `release-please-config.json` — sections, bump strategy, package metadata
+- `.release-please-manifest.json` — tracks the current version
+
 ### Dependabot auto-merge
 
 `.github/workflows/dependabot-auto-merge.yml` flips Dependabot patch and minor PRs to **auto-merge** as soon as all five CI gates pass. Major bumps stay manual and get a step-summary note prompting human review. Repo-level `allow_auto_merge` is enabled. Ecosystem-locked packages (Expo SDK / React / Jest cluster) have major bumps ignored in [`.github/dependabot.yml`](./.github/dependabot.yml), so most weekly noise auto-clears without you touching it.
