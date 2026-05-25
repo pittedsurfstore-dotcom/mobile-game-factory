@@ -35,7 +35,7 @@
     "@mgf/pool-lite": "workspace:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
+    "@babel/core": "^7.29.7",
     "@babel/runtime": "^7.25.0",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
