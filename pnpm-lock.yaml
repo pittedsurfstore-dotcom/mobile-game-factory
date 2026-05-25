@@ -141,8 +141,8 @@ importers:
         specifier: ^16.3.3
         version: 16.3.3(expo@52.0.49(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1))(react@18.3.1)
       react-native-purchases:
-        specifier: ^10.1.1
-        version: 10.1.1(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
+        specifier: ^10.1.2
+        version: 10.1.2(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
       react-native-safe-area-context:
         specifier: 4.12.0
         version: 4.12.0(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
@@ -1883,14 +1883,14 @@ packages:
   '@react-navigation/routers@7.5.5':
     resolution: {integrity: sha512-9/hhMte12Kgu+pMnLfA4EWJ0OQmIEAMVMX06FPH2yGkEQSQ3JhhCN/GkcRikzQhtEi97VYYQA15umptBUShcOQ==}
 
-  '@revenuecat/purchases-js-hybrid-mappings@18.6.0':
-    resolution: {integrity: sha512-IwFb6Tbtns0XZZmnQGP1IJWQ6GzZFjTFeL+BsudDZkIKQpaQ0BB/Am0wYTezCK28WHPp3ZYLNG1VYqx2V/kwDQ==}
+  '@revenuecat/purchases-js-hybrid-mappings@18.7.0':
+    resolution: {integrity: sha512-UcDYm8eFvtzLFW4lWQc61eZhCiOYpauTzfer4uzikJoKGIyDNdaGF/LmCqDnRsL9DCiHJ8IQu2lD6qUhGaTGxg==}
 
-  '@revenuecat/purchases-js@1.39.0':
-    resolution: {integrity: sha512-nCEEKR6JzQ91Yn/YQ77fmxKHyjSjArjSLKmjnEAD96Ad0m180xwqWe/Jx2L3yXqfednJmMLAVae2+uyR3nwYuw==}
+  '@revenuecat/purchases-js@1.40.0':
+    resolution: {integrity: sha512-fSJWo2CWJsX+WxQG5vMj4RhYo04zTXILTyKPsQATBZSYuQAaD7TpgClAtrktLc3iYv+M0vZedqKqRTxjZGPZXw==}
 
-  '@revenuecat/purchases-typescript-internal@18.6.0':
-    resolution: {integrity: sha512-WrcuwfqbxDeT3N+oKsjKH2uuc7rjEuuEtQbxAjw6lpwk7Xe2Wy6yGkzbTVvPgeGb2bw+FbBmLhB9piz3nNne+w==}
+  '@revenuecat/purchases-typescript-internal@18.7.0':
+    resolution: {integrity: sha512-1PjmYxzspgN9WizwbA247viT3h8bxtDoz6AIu8SkXrYm6RF1VTX7/awqiiEpsWCUMJMHydnLik+OFfXK03Jv9A==}
 
   '@segment/loosely-validate-event@2.0.0':
     resolution: {integrity: sha512-ZMCSfztDBqwotkl848ODgVcAmN4OItEWDCkshcKz0/W6gGSQayuuCtWV/MlodFivAZD793d6UgANd6wCXUfrIw==}
@@ -4616,8 +4616,8 @@ packages:
       expo:
         optional: true
 
-  react-native-purchases@10.1.1:
-    resolution: {integrity: sha512-eXaHd59zij5XD75qBIyYHDR1bihXDMWkgI5mYUpmLpibttwceWVdhT6iuOcN/GCs+RRuFbFWrhoStfNuE3RuEQ==}
+  react-native-purchases@10.1.2:
+    resolution: {integrity: sha512-NYU7a2VxvjF9pijsTqbly/39PfVY62c/spUpO26kc/SnqY5UG5y+UNfBdplRnFElbt4nM9AFN5bLkdGqT3z6/Q==}
     peerDependencies:
       react: '>= 16.6.3'
       react-native: '>= 0.73.0'
@@ -5677,7 +5677,7 @@ snapshots:
 
   '@babel/helper-annotate-as-pure@7.27.3':
     dependencies:
-      '@babel/types': 7.29.0
+      '@babel/types': 7.29.7
 
   '@babel/helper-annotate-as-pure@7.29.7':
     dependencies:
@@ -5876,7 +5876,7 @@ snapshots:
 
   '@babel/helper-wrap-function@7.28.6':
     dependencies:
-      '@babel/template': 7.28.6
+      '@babel/template': 7.29.7
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.7
     transitivePeerDependencies:
@@ -7655,13 +7655,13 @@ snapshots:
     dependencies:
       nanoid: 3.3.12
 
-  '@revenuecat/purchases-js-hybrid-mappings@18.6.0':
+  '@revenuecat/purchases-js-hybrid-mappings@18.7.0':
     dependencies:
-      '@revenuecat/purchases-js': 1.39.0
+      '@revenuecat/purchases-js': 1.40.0
 
-  '@revenuecat/purchases-js@1.39.0': {}
+  '@revenuecat/purchases-js@1.40.0': {}
 
-  '@revenuecat/purchases-typescript-internal@18.6.0': {}
+  '@revenuecat/purchases-typescript-internal@18.7.0': {}
 
   '@segment/loosely-validate-event@2.0.0':
     dependencies:
@@ -10381,8 +10381,8 @@ snapshots:
   metro-transform-plugins@0.81.5:
     dependencies:
       '@babel/core': 7.29.0
-      '@babel/generator': 7.29.1
-      '@babel/template': 7.28.6
+      '@babel/generator': 7.29.7
+      '@babel/template': 7.29.7
       '@babel/traverse': 7.29.0
       flow-enums-runtime: 0.0.6
       nullthrows: 1.1.1
@@ -10392,9 +10392,9 @@ snapshots:
   metro-transform-worker@0.81.5:
     dependencies:
       '@babel/core': 7.29.0
-      '@babel/generator': 7.29.1
-      '@babel/parser': 7.29.3
-      '@babel/types': 7.29.0
+      '@babel/generator': 7.29.7
+      '@babel/parser': 7.29.7
+      '@babel/types': 7.29.7
       flow-enums-runtime: 0.0.6
       metro: 0.81.5
       metro-babel-transformer: 0.81.5
@@ -10896,10 +10896,10 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  react-native-purchases@10.1.1(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1):
+  react-native-purchases@10.1.2(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@revenuecat/purchases-js-hybrid-mappings': 18.6.0
-      '@revenuecat/purchases-typescript-internal': 18.6.0
+      '@revenuecat/purchases-js-hybrid-mappings': 18.7.0
+      '@revenuecat/purchases-typescript-internal': 18.7.0
       react: 18.3.1
       react-native: 0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.5(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1)
 
