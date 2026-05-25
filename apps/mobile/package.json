@@ -18,7 +18,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "posthog-react-native": "^4.45.10",
     "react-native-google-mobile-ads": "^16.3.3",
-    "react-native-purchases": "^10.1.1",
+    "react-native-purchases": "^10.1.2",
     "@supabase/supabase-js": "^2.45.0",
     "@mgf/game-core": "workspace:*",
     "@mgf/ui": "workspace:*",
