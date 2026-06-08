@@ -19,7 +19,7 @@
     "posthog-react-native": "^4.46.19",
     "react-native-google-mobile-ads": "^16.3.3",
     "react-native-purchases": "^10.2.2",
-    "@supabase/supabase-js": "^2.106.2",
+    "@supabase/supabase-js": "^2.107.0",
     "@mgf/game-core": "workspace:*",
     "@mgf/ui": "workspace:*",
     "@mgf/analytics": "workspace:*",
